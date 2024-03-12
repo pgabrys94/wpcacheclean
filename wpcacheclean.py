@@ -23,7 +23,7 @@ def get_directory_size(directory):
 #   VARIABLES   #
 cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
 max_cache_size = 8  # maximum cache capacity in GB
-critical_cache_size = 9  # critical cache size which will force full cache removal
+critical_cache_size = 9.2  # critical cache size which will force full cache removal
 #               #
 
 cache_size_gb = get_directory_size(cache_dir)
