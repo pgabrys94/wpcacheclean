@@ -26,6 +26,12 @@ max_cache_size = 8  # maximum cache capacity in GB
 critical_cache_size = 9.2  # critical cache size which will force full cache removal
 #               #
 
+green = "\033[92m"
+red = "\033[91m"
+blue = "\033[94m"
+yellow = "\033[93m"
+reset = "\033[0m"
+
 cache_size_gb = get_directory_size(cache_dir)
 now = datetime.now()
 
@@ -39,10 +45,10 @@ try:
 
     if cache_size_gb >= critical_cache_size:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
-        print("CACHE CRITICAL, DUMPING CACHE...")
+        print("{}CACHE CRITICAL, DUMPING CACHE...{}".format(red, reset))
         shutil.rmtree(cache_dir)
     elif cache_size_gb > max_cache_size:
-        print("Cache overload, cleaning...")
+        print("{}Cache overload, cleaning...{}".format(yellow, reset))
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
             if (now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content)))) > timedelta(days=3):
@@ -59,17 +65,17 @@ try:
             print("\t\tForced: ", forced)
             print("\t\tOrphaned: ", orphaned)
     else:
-        print(f"Cache size below {max_cache_size}GB threshold, no action taken.")
+        print("{}Cache size below {}GB threshold, no action taken.{}".format(green, max_cache_size, reset))
 
 
 except Exception as err:
-    print("Cache cleaning error: ", err)
+    print("{}Cache cleaning error: {}".format(red, reset), err)
 
 try:
     response = requests.get("https://us.edu.pl/wp-cron.php?doing_wp_cron")
     if response.status_code == 200:
-        print("WordPress cron job triggered successfully.\n\n")
+        print("{}WordPress cron job triggered successfully.{}\n\n".format(green, reset))
     else:
-        print("Error triggering WordPress cron job:", response.status_code, "\n\n")
+        print("{}Error triggering WordPress cron job: {}{}\n\n".format(red, reset, response.status_code))
 except Exception as err:
-    print("Error sending GET request to trigger WordPress cronjob\n\n")
+    print("{}Error sending GET request to trigger WordPress cronjob: {}{}\n\n".format(red, reset, err))
