@@ -21,7 +21,7 @@ def get_directory_size(directory):
 
 
 #   VARIABLES   #
-cache_dir = os.path.normpath('/var/www/wordpress/wp-content/cache/wp-rocket/us.edu.pl')   # cache location
+cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
 max_cache_size = 8  # maximum cache capacity in GB
 #               #
 
