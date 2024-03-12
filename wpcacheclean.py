@@ -62,8 +62,8 @@ except Exception as err:
 try:
     response = requests.get("https://us.edu.pl/wp-cron.php?doing_wp_cron")
     if response.status_code == 200:
-        print("WordPress cron job triggered successfully.")
+        print("WordPress cron job triggered successfully.\n\n")
     else:
-        print("Error triggering WordPress cron job:", response.status_code)
+        print("Error triggering WordPress cron job:", response.status_code, "\n\n")
 except Exception as err:
-    print("Error sending GET request to trigger WordPress cronjob")
+    print("Error sending GET request to trigger WordPress cronjob\n\n")
