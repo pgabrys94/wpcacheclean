@@ -23,6 +23,7 @@ def get_directory_size(directory):
 #   VARIABLES   #
 cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
 max_cache_size = 8  # maximum cache capacity in GB
+critical_cache_size = 9  # critical cache size which will force full cache removal
 #               #
 
 cache_size_gb = get_directory_size(cache_dir)
@@ -35,7 +36,12 @@ orphaned = 0
 try:
     print(now.strftime("%Y-%m-%d %H:%M:%S"))
     print("Current cache size: ", cache_size_gb, "GB")
-    if cache_size_gb > max_cache_size:
+
+    if cache_size_gb >= critical_cache_size:
+        # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
+        print("CACHE CRITICAL, DUMPING CACHE...")
+        shutil.rmtree(cache_dir)
+    elif cache_size_gb > max_cache_size:
         print("Cache overload, cleaning...")
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
