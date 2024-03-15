@@ -84,7 +84,7 @@ try:
     else:
         print("{}Cache size below {}GB threshold, no action taken.{}".format(green, max_cache_size, reset))
         if cache_size_gb < int(last_cache_size):
-            print("{}Cache size has been reduced by{} {}"
+            print("{}Cache size has been reduced by{} {}GB"
                   .format(yellow, reset, (int(last_cache_size) - int(cache_size_gb))))
 
         tmp_write()
