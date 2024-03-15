@@ -59,6 +59,7 @@ orphaned = 0
 try:
     print(now.strftime("%Y-%m-%d %H:%M:%S"))
     print("Current cache size: ", cache_size_gb, "GB")
+    print("{}Previous cache size: {}GB{}".format(blue, last_cache_size, reset))
 
     if cache_size_gb >= critical_cache_size:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
