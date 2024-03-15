@@ -20,8 +20,14 @@ def get_directory_size(directory):
     return total_size / pow(1024, 3)
 
 
+def tmp_write():
+    with open(temp_file, "w") as temp:
+        temp.write(str(cache_size_gb))
+
+
 #   VARIABLES   #
 cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
+temp_file = os.path.normpath("/tmp/wpcc.tmp")
 max_cache_size = 8  # maximum cache capacity in GB
 critical_cache_size = 9.2  # critical cache size which will force full cache removal
 #               #
@@ -32,8 +38,19 @@ blue = "\033[94m"
 yellow = "\033[93m"
 reset = "\033[0m"
 
+
 cache_size_gb = get_directory_size(cache_dir)
 now = datetime.now()
+last_cache_size = 0
+
+if os.path.exists(temp_file):
+    try:
+        with open(temp_file, "r") as tmp:
+            last_cache_size = int(tmp.read())
+    except Exception:
+        pass
+else:
+    tmp_write()
 
 total = 0
 forced = 0
@@ -66,6 +83,11 @@ try:
             print("\t\tOrphaned: ", orphaned)
     else:
         print("{}Cache size below {}GB threshold, no action taken.{}".format(green, max_cache_size, reset))
+        if cache_size_gb < int(last_cache_size):
+            print("{}Cache size has been reduced by{} {}"
+                  .format(yellow, reset, (int(last_cache_size) - int(cache_size_gb))))
+
+        tmp_write()
 
 
 except Exception as err:
