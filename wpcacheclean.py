@@ -84,7 +84,7 @@ try:
             print("\t\tOrphaned: ", orphaned)
     else:
         print("{}Cache size below {:.3f} GB threshold, no action taken.{}".format(green, max_cache_size, reset))
-        if cache_size_gb < last_cache_size:
+        if cache_size_gb < last_cache_size and (last_cache_size - cache_size_gb) >= 0.001:
             print("{}Cache size has been reduced by{} {:.3f} GB"
                   .format(yellow, reset, last_cache_size - cache_size_gb))
 
