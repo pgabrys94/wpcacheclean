@@ -46,7 +46,7 @@ last_cache_size = 0
 if os.path.exists(temp_file):
     try:
         with open(temp_file, "r") as tmp:
-            last_cache_size = int(tmp.read())
+            last_cache_size = float(tmp.read())
     except Exception:
         pass
 else:
