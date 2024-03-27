@@ -55,10 +55,10 @@ try:
 
     if cache_size_gb >= critical_cache_size:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
-        prompt = "CACHE CRITICAL, DUMPING CACHE..."
+        prompt = "CACHE CRITICAL: {:.3f}, DUMPING CACHE...".format(cache_size_gb)
         shutil.rmtree(cache_dir)
     elif cache_size_gb > max_cache_size:
-        prompt = "Cache overload, cleaning: "
+        prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
             if (now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content)))) > timedelta(days=3):
@@ -74,7 +74,7 @@ try:
             prompt += "R: ", total, " F: ", forced, " O: ", orphaned
 
     else:
-        prompt = "Cache size below {:.3f} GB threshold, no action taken."
+        prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
         if cache_size_gb < last_cache_size and (last_cache_size - cache_size_gb) >= 0.001:
             prompt += "Cache size has been reduced by {:.3f} GB".format(last_cache_size - cache_size_gb)
 
