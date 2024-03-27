@@ -75,8 +75,6 @@ try:
 
     else:
         prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
-        if cache_size_gb < last_cache_size and (last_cache_size - cache_size_gb) >= 0.001:
-            prompt += "Cache size has been reduced by {:.3f} GB".format(last_cache_size - cache_size_gb)
 
         tmp_write()
 
