@@ -69,12 +69,12 @@ try:
         print("{}Cache overload, cleaning...{}".format(yellow, reset))
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
-            if (now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content)))) > timedelta(days=3):
+            if now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content))) > timedelta(days=3):
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 orphaned += 1
             # else if cache was created 7 days ago, but modified less than 3 days ago, it will be deleted
-            elif (now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content)))) > timedelta(days=7):
+            elif now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content))) > timedelta(days=7):
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 forced += 1
