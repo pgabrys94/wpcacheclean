@@ -32,16 +32,11 @@ max_cache_size = 8  # maximum cache capacity in GB
 critical_cache_size = 9.2  # critical cache size which will force full cache removal
 #               #
 
-green = "\033[92m"
-red = "\033[91m"
-blue = "\033[94m"
-yellow = "\033[93m"
-reset = "\033[0m"
-
-
 cache_size_gb = get_directory_size(cache_dir)
 now = datetime.now()
 last_cache_size = 0
+prompt = ""
+cron_prompt = ""
 
 if os.path.exists(temp_file):
     try:
@@ -57,16 +52,13 @@ forced = 0
 orphaned = 0
 
 try:
-    print(now.strftime("%Y-%m-%d %H:%M:%S"))
-    print("Current cache size: {:.3f} GB".format(cache_size_gb))
-#    print("{}Previous cache size: {:.3f} GB{}".format(blue, last_cache_size, reset))
 
     if cache_size_gb >= critical_cache_size:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
-        print("{}CACHE CRITICAL, DUMPING CACHE...{}".format(red, reset))
+        prompt = "CACHE CRITICAL: {:.3f}, DUMPING CACHE...".format(cache_size_gb)
         shutil.rmtree(cache_dir)
     elif cache_size_gb > max_cache_size:
-        print("{}Cache overload, cleaning...{}".format(yellow, reset))
+        prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
             if now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content))) > timedelta(days=3):
@@ -79,26 +71,27 @@ try:
                 total += 1
                 forced += 1
 
-            print("\tTotal directories removed: ", total)
-            print("\t\tForced: ", forced)
-            print("\t\tOrphaned: ", orphaned)
+            prompt += "R: ", total, " F: ", forced, " O: ", orphaned
+
     else:
-        print("{}Cache size below {:.3f} GB threshold, no action taken.{}".format(green, max_cache_size, reset))
-        if cache_size_gb < last_cache_size and (last_cache_size - cache_size_gb) >= 0.001:
-            print("{}Cache size has been reduced by{} {:.3f} GB"
-                  .format(yellow, reset, last_cache_size - cache_size_gb))
+        prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
 
         tmp_write()
 
 
 except Exception as err:
-    print("{}Cache cleaning error: {}".format(red, reset), err)
+    prompt = "Cache cleaning ERROR: {}".format(err)
 
 try:
     response = requests.get("https://us.edu.pl/wp-cron.php?doing_wp_cron")
     if response.status_code == 200:
-        print("{}WordPress cron job triggered successfully.{}\n\n".format(green, reset))
+        cron_prompt = "WP-Cron OK"
     else:
-        print("{}Error triggering WordPress cron job: {}{}\n\n".format(red, reset, response.status_code))
+        cron_prompt = "WP-Cron ERROR: {}".format(response.status_code)
+
 except Exception as err:
-    print("{}Error sending GET request to trigger WordPress cronjob: {}{}\n\n".format(red, reset, err))
+    print("ERROR sending GET request to trigger WordPress cronjob: {}".format(err))
+finally:
+    msg = "{} - curr: {:.3f}; delta: {:.3f}\t| {}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
+                                                              cache_size_gb - last_cache_size, prompt, cron_prompt)
+    print(msg)
