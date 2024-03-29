@@ -66,7 +66,7 @@ try:
                 total += 1
                 orphaned += 1
             # else if cache was created 7 days ago, but modified less than 3 days ago, it will be deleted
-            elif now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content))) > timedelta(days=7):
+            elif now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content))) > timedelta(days=5):
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 forced += 1
