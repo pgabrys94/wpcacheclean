@@ -71,8 +71,8 @@ try:
                 total += 1
                 forced += 1
 
-        prompt += "R: {}, F: {}, O: {}, delta: {:.3f}".format(total, forced, orphaned,
-                                                              cache_size_gb - get_directory_size(cache_dir))
+        prompt += "R: {}, F: {}, O: {}, delta: {:.3f} GB".format(total, forced, orphaned,
+                                                                 cache_size_gb - get_directory_size(cache_dir))
 
     else:
         prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
