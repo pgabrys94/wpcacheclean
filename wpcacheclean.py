@@ -77,7 +77,7 @@ try:
     else:
         prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
 
-        tmp_write()
+    tmp_write()
 
 
 except Exception as err:
