@@ -28,8 +28,8 @@ def tmp_write():
 #   VARIABLES   #
 cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
 temp_file = os.path.normpath("/tmp/wpcc.tmp")
-max_cache_size = 8  # maximum cache capacity in GB
-critical_cache_size = 9.2  # critical cache size which will force full cache removal
+max_cache_size = 7.8  # maximum cache capacity in GB
+critical_cache_size = 8.8  # critical cache size which will force full cache removal
 #               #
 
 cache_size_gb = get_directory_size(cache_dir)
@@ -94,5 +94,5 @@ except Exception as err:
     print("ERROR sending GET request to trigger WordPress cronjob: {}".format(err))
 finally:
     msg = "{} - curr: {:.3f}; delta: {:.3f}\t| {}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
-                                                              cache_size_gb - last_cache_size, prompt, cron_prompt)
+                                                                cache_size_gb - last_cache_size, prompt, cron_prompt)
     print(msg)
