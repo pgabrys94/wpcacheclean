@@ -58,7 +58,7 @@ try:
         prompt = "CACHE CRITICAL: {:.3f}, DUMPING CACHE...".format(cache_size_gb)
         shutil.rmtree(cache_dir)
     elif cache_size_gb > max_cache_size:
-        prompt = "Cache overload: {:.3f}, cleaning: "
+        prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
             if now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content))) > timedelta(days=3):
@@ -71,8 +71,8 @@ try:
                 total += 1
                 forced += 1
 
-        prompt += "R: {}, F: {}, O: {}, delta: {}".format(cache_size_gb, total, forced, orphaned,
-                                                          cache_size_gb - get_directory_size(cache_dir))
+        prompt += "R: {}, F: {}, O: {}, delta: {:.3f}".format(total, forced, orphaned,
+                                                              cache_size_gb - get_directory_size(cache_dir))
 
     else:
         prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
