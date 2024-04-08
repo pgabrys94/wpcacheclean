@@ -28,8 +28,8 @@ def tmp_write():
 #   VARIABLES   #
 cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
 temp_file = os.path.normpath("/tmp/wpcc.tmp")
-max_cache_size = 8  # maximum cache capacity in GB
-critical_cache_size = 9.2  # critical cache size which will force full cache removal
+max_cache_size = 7.8  # maximum cache capacity in GB
+critical_cache_size = 8.8  # critical cache size which will force full cache removal
 #               #
 
 cache_size_gb = get_directory_size(cache_dir)
@@ -61,23 +61,24 @@ try:
         prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
-            if (now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content)))) > timedelta(days=3):
+            if now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content))) > timedelta(days=3):
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 orphaned += 1
                 continue
             # else if cache was created 7 days ago, but modified less than 3 days ago, it will be deleted
-            elif (now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content)))) > timedelta(days=7):
+            elif now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content))) > timedelta(days=5):
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 forced += 1
 
-            prompt += "R: ", total, " F: ", forced, " O: ", orphaned
+        prompt += "R: {}, F: {}, O: {}, delta: {:.3f} GB".format(total, forced, orphaned,
+                                                                 cache_size_gb - get_directory_size(cache_dir))
 
     else:
         prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
 
-        tmp_write()
+    tmp_write()
 
 
 except Exception as err:
