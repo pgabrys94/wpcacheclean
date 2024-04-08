@@ -65,6 +65,7 @@ try:
                 shutil.rmtree(os.path.join(cache_dir, content))
                 total += 1
                 orphaned += 1
+                continue
             # else if cache was created 7 days ago, but modified less than 3 days ago, it will be deleted
             elif (now - datetime.fromtimestamp(os.path.getctime(os.path.join(cache_dir, content)))) > timedelta(days=7):
                 shutil.rmtree(os.path.join(cache_dir, content))
@@ -93,5 +94,5 @@ except Exception as err:
     print("ERROR sending GET request to trigger WordPress cronjob: {}".format(err))
 finally:
     msg = "{} - curr: {:.3f}; delta: {:.3f}\t| {}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
-                                                              cache_size_gb - last_cache_size, prompt, cron_prompt)
+                                                                cache_size_gb - last_cache_size, prompt, cron_prompt)
     print(msg)
