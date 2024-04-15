@@ -56,7 +56,8 @@ try:
     if cache_size_gb >= critical_cache_size:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
         prompt = "CACHE CRITICAL: {:.3f}, DUMPING CACHE...".format(cache_size_gb)
-        shutil.rmtree(cache_dir)
+        shutil.rmtree(cache_dir, True)
+        prompt += "\tdelta: {}".format(get_directory_size(cache_dir) - cache_size_gb)
     elif cache_size_gb > max_cache_size:
         prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
