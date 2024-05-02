@@ -1,8 +1,8 @@
-#   v1.4.2
+#   v1.4.3
 
 import os
 import shutil
-import requests     # apt install python3-requests
+import requests  # apt install python3-requests
 from datetime import datetime, timedelta
 
 
@@ -25,12 +25,16 @@ def tmp_write():
         temp.write(str(cache_size_gb))
 
 
+#
+#
 #   VARIABLES   #
-cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')   # cache location
+cache_dir = os.path.normpath('/exports/ramdisk/us.edu.pl')  # cache location
 temp_file = os.path.normpath("/tmp/wpcc.tmp")
-max_cache_size = 7.8  # maximum cache capacity in GB
-critical_cache_size = 8.8  # critical cache size which will force full cache removal
-#               #
+critical_cache_size = 9.0  # critical cache size which will force full cache removal
+top_cache_size = 90  # percentage of critical_cache_size which will trigger soft cleaning attempts
+#
+#
+#
 
 cache_size_gb = get_directory_size(cache_dir)
 now = datetime.now()
@@ -42,7 +46,7 @@ if os.path.exists(temp_file):
     try:
         with open(temp_file, "r") as tmp:
             last_cache_size = float(tmp.read())
-    except Exception:
+    except ValueError:
         pass
 else:
     tmp_write()
@@ -52,14 +56,15 @@ forced = 0
 orphaned = 0
 
 try:
+    soft_limit = critical_cache_size * top_cache_size / 100
 
-    if cache_size_gb >= critical_cache_size:
+    if cache_size_gb >= soft_limit:
         # this will trigger mostly due to unwanted traffic on website (bots, crawlers, harvesters etc.)
-        prompt = "CACHE CRITICAL: {:.3f}, DUMPING CACHE...".format(cache_size_gb)
+        prompt = "CACHE CRITICAL: {:.3f}, DROPPING CACHE...".format(cache_size_gb)
         shutil.rmtree(cache_dir, True)
-        prompt += "\tdelta: {}".format(get_directory_size(cache_dir) - cache_size_gb)
-    elif cache_size_gb > max_cache_size:
-        prompt = "Cache overload: {:.3f}, cleaning: ".format(cache_size_gb)
+        prompt += "\tdelta: {:.3f}".format(get_directory_size(cache_dir) - cache_size_gb)
+    elif cache_size_gb > soft_limit:
+        prompt = "Cache size reached peak: {:.3f}, attempting cleaning... ".format(cache_size_gb)
         for content in os.listdir(cache_dir):
             # if cache was modified more than 3 days ago, it will be deleted
             if now - datetime.fromtimestamp(os.path.getmtime(os.path.join(cache_dir, content))) > timedelta(days=3):
@@ -73,11 +78,14 @@ try:
                 total += 1
                 forced += 1
 
-        prompt += "R: {}, F: {}, O: {}, delta: {:.3f} GB".format(total, forced, orphaned,
-                                                                 cache_size_gb - get_directory_size(cache_dir))
+        if cache_size_gb - get_directory_size(cache_dir) >= 0.001:
+            prompt += "R: {}, F: {}, O: {}, delta: {:.3f} GB".format(total, forced, orphaned,
+                                                                     cache_size_gb - get_directory_size(cache_dir))
+        else:
+            prompt += "but there was nothing to clean."
 
     else:
-        prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(max_cache_size)
+        prompt = "Cache size below {:.3f} GB threshold, nothing to do.".format(soft_limit)
 
     tmp_write()
 
@@ -95,6 +103,6 @@ try:
 except Exception as err:
     print("ERROR sending GET request to trigger WordPress cronjob: {}".format(err))
 finally:
-    msg = "{} - curr: {:.3f}; delta: {:.3f}\t| {}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
+    msg = "{} - curr: {:.3f}; delta:\t{:.3f}\t|{}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
                                                                 cache_size_gb - last_cache_size, prompt, cron_prompt)
     print(msg)
