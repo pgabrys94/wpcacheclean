@@ -103,6 +103,6 @@ try:
 except Exception as err:
     print("ERROR sending GET request to trigger WordPress cronjob: {}".format(err))
 finally:
-    msg = "{} - curr: {:.3f}; delta:\t{:.3f}\t|{}\t| {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
+    msg = "{} - curr: {:.3f}; delta:\t{:.3f}\t| {} | {}".format(now.strftime("%Y-%m-%d %H:%M:%S"), cache_size_gb,
                                                                 cache_size_gb - last_cache_size, prompt, cron_prompt)
     print(msg)
